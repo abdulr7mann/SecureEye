@@ -5,8 +5,8 @@ SecureEye is an advanced AI-powered tool for secure source code review. It condu
 
 ### Create virtualenv
 ```bash
-virtualenv secureEye 
-. secureEye/bin/activate
+virtualenv venv 
+. venv/bin/activate
 ```
 ### Install dependencies
 ```bash
