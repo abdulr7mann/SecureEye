@@ -11,7 +11,7 @@ import fnmatch
 from git import RemoteProgress
 import codeReview
 # Repository URL
-repo_url = f"https://github.com/echoCTF/echoCTF.RED.git"
+repo_url = f"https://github.com/username/repo.git"
 # repo_url = (
 #     "https://github.com/jadz/php-sploits.git",
 #     "https://github.com/snoopysecurity/Vulnerable-Code-Snippets.git",
