@@ -10,9 +10,21 @@ import chardet
 import fnmatch
 from git import RemoteProgress
 import codeReview
+
+# Define the cost per token and per second
+COST_PER_TOKEN = 0.000002
+COST_PER_SECOND = 0.005555
+# Calculate the number of seconds
+num_seconds = 0
+# Calculate the total cost of tokens
+num_tokens = 0
+
+start_time = time.time()
 # Repository URL
-repo_url = f"https://github.com/jadz/php-sploits.git"
+repo_url = (f"https://github.com/snoopysecurity/Vulnerable-Code-Snippets.git")
 # repo_url = (
+#     "https://github.com/jadz/php-sploits.git"
+#     "https://github.com/django-cms/django-cms.git",
 #     "https://github.com/snoopysecurity/Vulnerable-Code-Snippets.git",
 #     "https://github.com/Stealerium/Stealerium.git",
 #     "https://github.com/rubennati/vulnerable-php-code-examples.git"
@@ -27,6 +39,9 @@ local_repo_path = f"{current_path}/{repo_name}"
 # Define the blacklist of file names
 blacklist = (
     "*.md",
+    "changelog.txt",
+    "*.txt",
+    "*.ico",
     "README",
     "LICENSE",
     "*.csproj",
@@ -65,11 +80,15 @@ if os.path.isdir(local_repo_path):
     origin = repo.remote(name='origin')
     origin.pull()
     print(f"Repository successfully updated: {repo_url} --> {local_repo_path}")
+    print(f"Creating report folder: {current_path}/report/{repo_name}")
+    os.mkdir(f'{current_path}/report/{repo_name}')
 else:
     # If the directory does not exist, clone the repository
     try:
         git.Repo.clone_from(repo_url, local_repo_path)
         print(f"Cloning is successful: {repo_url} --> {local_repo_path}")
+        print(f"Creating report folder: {current_path}/report/{repo_name}")
+        os.mkdir(f'{current_path}/report/{repo_name}')
     except git.exc.GitCommandError as e:
         print(f"An error occurred while cloning the repository: {e}")
         exit(1)
@@ -115,6 +134,7 @@ for file in repo.tree().traverse():
             # Handle the exception
             print("KeyboardInterrupt caught. Exiting...")
         # Analyze the file contents using ChatGPT
+        start_time = time.time()
         analysis = ""
         analysis = codeReview.codeReviewAi.analyze_file_contents(
             file_contents, file_name)
@@ -122,11 +142,29 @@ for file in repo.tree().traverse():
         if analysis is None:
             continue
         # Do something with the analysis here (e.g., print it)
-        print(analysis["choices"][0]["message"]["content"])
-        print(analysis["usage"]["total_tokens"])
-        # generatePDF(analysis)
-        # generateMD(analysis)
-
+        # Open the output file in write append
+        now = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+        with open(f'{current_path}/report/{repo_name}/{repo_name}-{now}.md', 'a') as reporting:
+            # Redirect the standard output to the file
+            sys.stdout = reporting
+            end_time = time.time()
+            time_consumed = end_time - start_time
+            # Calculate the number of seconds
+            num_seconds = time_consumed
+            # Calculate the total cost of tokens
+            num_tokens = int(analysis['usage']['total_tokens'])
+            token_cost = num_tokens * COST_PER_TOKEN
+            # Calculate the total cost of time
+            time_cost = num_seconds * COST_PER_SECOND
+            # Calculate the total cost
+            total_cost = token_cost + time_cost
+            print(f"### Total time consumed: {time_consumed/60:.0f} minutes")
+            print(f"### Total tokens used: {analysis['usage']['total_tokens']}")
+            print(f"### Total cost is: ${total_cost:.2f}")
+            print(f"### Repository: {repo_name}\n### File: {file_name}")
+            print(f'{analysis["choices"][0]["message"]["content"]}\n\n\n')
+            # Redirect the standard output back to the terminal
+            sys.stdout = sys.__stdout__
 
 # Delete the temporary directory
 try:
