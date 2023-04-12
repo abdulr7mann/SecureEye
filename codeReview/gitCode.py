@@ -11,9 +11,8 @@ import fnmatch
 from git import RemoteProgress
 import codeReview
 # Repository URL
-repo_url = f"https://github.com/username/repo.git"
+repo_url = f"https://github.com/jadz/php-sploits.git"
 # repo_url = (
-#     "https://github.com/jadz/php-sploits.git",
 #     "https://github.com/snoopysecurity/Vulnerable-Code-Snippets.git",
 #     "https://github.com/Stealerium/Stealerium.git",
 #     "https://github.com/rubennati/vulnerable-php-code-examples.git"
@@ -123,18 +122,8 @@ for file in repo.tree().traverse():
         if analysis is None:
             continue
         # Do something with the analysis here (e.g., print it)
-        # Open the output file in write mode
-        with open(f'{repo_name}.md', 'a') as reporting:
-            # Redirect the standard output to the file
-            sys.stdout = reporting
-            print(f"### Repository: {repo_name}\n### File: {file_name}")
-            print(analysis["choices"][0]["message"]["content"])
-            print(f"### Total tokens used: {analysis['usage']['total_tokens']}")
-            # Redirect the standard output back to the terminal
-            sys.stdout = sys.__stdout__
-
-        # print(analysis["choices"][0]["message"]["content"])
-        # print(analysis["usage"]["total_tokens"])
+        print(analysis["choices"][0]["message"]["content"])
+        print(analysis["usage"]["total_tokens"])
         # generatePDF(analysis)
         # generateMD(analysis)
 
