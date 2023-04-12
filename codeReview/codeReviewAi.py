@@ -4,7 +4,7 @@ import re
 from dotenv import load_dotenv
 
 """
-Uses OpenAI's ChatGPT to analyze the contents of a file. Removes any comments from the file contents and splits the messages into smaller chunks of at most 1000 tokens. Calls the ChatGPT API to analyze each chunk and returns the response.
+Uses OpenAI's ChatGPT to analyze the contents of a file. Removes any comments from the file contents and splits the messages into smaller chunks of at most 2000 tokens. Calls the ChatGPT API to analyze each chunk and returns the response.
 
 Args:
 file_contents (str): The contents of the file to analyze.
@@ -17,8 +17,8 @@ The response from the ChatGPT API, or None if an error occurs.
 # Set up the OpenAI API credentials
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
-system_role = os.getenv("SYSTEM_ROLE")
-assistant_role = os.getenv("ASSISTANT_ROLE")
+system_role = os.getenv("SYSTEM_ROLE2")
+assistant_role = os.getenv("ASSISTANT_ROLE2")
 max_tokens = os.getenv("MAX_TOKENS")
 model = os.getenv("MODEL")
 # Define the function to analyze the file contents using ChatGPT
@@ -37,7 +37,7 @@ def analyze_file_contents(file_contents, file_name):
         r'^\s*//[\s\S]*?\s*$', '', file_contents, flags=re.MULTILINE)
 
     # Split the message into smaller chunks of at most 4096 tokens
-    print("Splitting messages into smaller chunks of at most 1000 tokens")
+    print("Splitting messages into smaller chunks of at most 2000 tokens")
     message_chunks = [file_contents[i:i + int(max_tokens)]
                       for i in range(0, len(file_contents), int(max_tokens))]
     # Use ChatGPT to analyze the file contents
