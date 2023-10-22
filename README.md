@@ -18,7 +18,7 @@ python3 main.py
 ```
 ### use as web app
 ```bash
-python3 app.py
+streamlit run app.py
 ```
 ### OutPut
 
@@ -58,3 +58,6 @@ This code filters $_GET['username'] and apply a filter to validate that it is a 
 821
 
 ![image](https://user-images.githubusercontent.com/51442494/230654799-691528ac-8cc4-4032-b753-90d1152661de.png)
+
+![image](https://github.com/abdulr7mann/SecureEye/assets/51442494/78658a7f-5d7b-478c-bd0c-cf7465092fc4)
+
