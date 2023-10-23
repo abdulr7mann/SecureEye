@@ -12,7 +12,7 @@ python3 -m pip install requirements.txt
 ```
 ### use as cmdline
 ```bash
-python3 main.py
+python3 cli.py
 ```
 ### use as web app
 ```bash
