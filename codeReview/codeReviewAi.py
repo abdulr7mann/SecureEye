@@ -9,8 +9,8 @@ load_dotenv()
 
 # Set up the OpenAI API credentials
 openai.api_key = os.getenv("OPENAI_API_KEY")
-system_role = os.getenv("SYSTEM_ROLE2")
-assistant_role = os.getenv("ASSISTANT_ROLE2")
+system_role = os.getenv("SYSTEM_ROLE")
+assistant_role = os.getenv("ASSISTANT_ROLE")
 max_tokens = os.getenv("MAX_TOKENS")
 model = os.getenv("MODEL")
 
@@ -30,10 +30,10 @@ def analyze_file_contents(file_contents, file_name):
     
     print(f"Removing comments from the file contents: {file_name}")
 
-    # Strip any comments from the file contents
-    file_contents = re.sub(r'^\s*"""[\s\S]*?"""\s*$', '', file_contents, flags=re.MULTILINE)
-    file_contents = re.sub(r'^\s*#[\s\S]*?\s*$', '', file_contents, flags=re.MULTILINE)
-    file_contents = re.sub(r'^\s*//[\s\S]*?\s*$', '', file_contents, flags=re.MULTILINE)
+    # # Strip any comments from the file contents
+    # file_contents = re.sub(r'^\s*"""[\s\S]*?"""\s*$', '', file_contents, flags=re.MULTILINE)
+    # file_contents = re.sub(r'^\s*#[\s\S]*?\s*$', '', file_contents, flags=re.MULTILINE)
+    # file_contents = re.sub(r'^\s*//[\s\S]*?\s*$', '', file_contents, flags=re.MULTILINE)
 
     print("Splitting messages into smaller chunks of at most 2000 tokens")
 
