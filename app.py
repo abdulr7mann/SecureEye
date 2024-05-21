@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 from codeReview.gitCode import analyze_repository, output_messages
+from js_scraper import scrape_js_sync
 
 def main():
     st.title('Code Review App')
@@ -11,16 +12,22 @@ def main():
     # Create a file uploader for local files
     uploaded_file = st.file_uploader('Or upload a file:', type=['zip', 'py', 'js', 'html', 'css'])
 
+    # Add a checkbox for recursive scraping
+    recursive = st.checkbox('Enable recursive scraping for JS')
+
     # Create a button to trigger the analysis
     if st.button('Analyze'):
         if url:
-            # If a URL is provided, analyze the GitHub repository
+            # If a URL is provided, analyze the GitHub repository or scrape JS
             st.write('Analyzing...')
-            analyze_repository(url)  # Call your analysis function
+            if url.endswith('.git'):
+                analyze_repository(url)  # Call your analysis function for GitHub repository
+            else:
+                scrape_js_sync(url, recursive)  # Call the JS scraping function
             for message in output_messages:
                 st.write(message)
             output_messages.clear()
-            st.write('Analysis complete.')  # You might want to show the results here
+            st.write('Analysis complete.')  # Show the results here
             
             # Display markdown reports
             report_path = f"report/{url.split('/')[-1].replace('.git', '')}" if 'http' in url else f"report/{os.path.basename(url)}"
@@ -35,7 +42,7 @@ def main():
             st.write('Analyzing the uploaded file...')
             # You'll need to modify or create a new function to handle file objects or file paths
             # analyze_file(uploaded_file)
-            st.write('Analysis complete.')  # You might want to show the results here
+            st.write('Analysis complete.')  # Show the results here
         else:
             st.warning('Please enter a GitHub URL or upload a file.')
 
