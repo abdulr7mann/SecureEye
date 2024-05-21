@@ -1,3 +1,5 @@
+# codeReview/gitCode.py
+
 import git
 import os
 import sys
@@ -8,8 +10,6 @@ import fnmatch
 import shutil
 import zipfile
 from . import codeReviewAi
-
-
 
 # Define the cost per token and per second
 COST_PER_TOKEN = 0.000002
@@ -26,6 +26,8 @@ BLACKLIST = [
     "Makefile", ".mailmap"
 ]
 
+output_messages = []
+
 def analyze_repository(repo_url):
     repo_name = repo_url.split("/")[-1].replace(".git", "")
     current_path = os.getcwd()
@@ -35,13 +37,13 @@ def analyze_repository(repo_url):
         repo = git.Repo(local_repo_path)
         origin = repo.remote(name='origin')
         origin.pull()
-        print(f"Repository successfully updated: {repo_url} --> {local_repo_path}")
+        output_messages.append(f"Repository successfully updated: {repo_url} --> {local_repo_path}")
     else:
         try:
             git.Repo.clone_from(repo_url, local_repo_path)
-            print(f"Cloning is successful: {repo_url} --> {local_repo_path}")
+            output_messages.append(f"Cloning is successful: {repo_url} --> {local_repo_path}")
         except git.exc.GitCommandError as e:
-            print(f"An error occurred while cloning the repository: {e}")
+            output_messages.append(f"An error occurred while cloning the repository: {e}")
             sys.exit(1)
 
     analyze_files(local_repo_path)
@@ -58,7 +60,7 @@ def analyze_local_path(local_path):
     elif os.path.isdir(local_path):
         analyze_files(local_path)
     else:
-        print(f"Invalid path: {local_path}")
+        output_messages.append(f"Invalid path: {local_path}")
         sys.exit(1)
         
 def analyze_files(path):
@@ -74,7 +76,7 @@ def analyze_files(path):
     for root, _, files in os.walk(path):
         for file in files:
             if any(fnmatch.fnmatch(file.lower(), pattern) for pattern in blacklist):
-                print(f"Excluding file: {file}")
+                output_messages.append(f"Excluding file: {file}")
                 continue
             
             file_path = os.path.join(root, file)
@@ -92,7 +94,8 @@ def analyze_files(path):
                     continue
 
                 now = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-                with open(f'{report_dir}/{repo_name}-{now}.md', 'a') as reporting:
+                report_file_path = f'{report_dir}/{repo_name}-{now}.md'
+                with open(report_file_path, 'a') as reporting:
                     sys.stdout = reporting
                     
                     end_time = time.time()
@@ -111,6 +114,8 @@ def analyze_files(path):
                     print(f'{analysis["choices"][0]["message"]["content"]}\n\n\n')
                     
                     sys.stdout = sys.__stdout__
+                    output_messages.append(f"Analyzed {file_path}: {analysis['choices'][0]['message']['content']}")
+
             except KeyboardInterrupt:
                 print("\nAnalysis interrupted by user. Exiting...")
                 sys.exit()
